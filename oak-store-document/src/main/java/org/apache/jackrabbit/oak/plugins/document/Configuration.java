@@ -34,7 +34,7 @@ import static org.apache.jackrabbit.oak.plugins.document.DocumentNodeStoreBuilde
 import static org.apache.jackrabbit.oak.plugins.document.DocumentNodeStoreBuilder.DEFAULT_NODE_CACHE_PERCENTAGE;
 import static org.apache.jackrabbit.oak.plugins.document.DocumentNodeStoreBuilder.DEFAULT_PREV_DOC_CACHE_PERCENTAGE;
 import static org.apache.jackrabbit.oak.plugins.document.DocumentNodeStoreBuilder.DEFAULT_UPDATE_LIMIT;
-import static org.apache.jackrabbit.oak.plugins.document.DocumentNodeStoreService.DEFAULT_DETAILED_GC_ENABLED;
+import static org.apache.jackrabbit.oak.plugins.document.DocumentNodeStoreService.DEFAULT_FULL_GC_ENABLED;
 import static org.apache.jackrabbit.oak.plugins.document.DocumentNodeStoreService.DEFAULT_EMBEDDED_VERIFICATION_ENABLED;
 import static org.apache.jackrabbit.oak.plugins.document.DocumentNodeStoreService.DEFAULT_THROTTLING_ENABLED;
 
@@ -311,10 +311,10 @@ import static org.apache.jackrabbit.oak.plugins.document.DocumentNodeStoreServic
     @AttributeDefinition(
             name = "Document Node Store Detailed GC",
             description = "Boolean value indicating whether Detailed GC should be enabled for " +
-                    "document node store or not. The Default value is " + DEFAULT_DETAILED_GC_ENABLED +
+                    "document node store or not. The Default value is " + DEFAULT_FULL_GC_ENABLED +
                     ". Note that this value can be overridden via framework " +
-                    "property 'oak.documentstore.detailedGCEnabled'")
-    boolean detailedGCEnabled() default DEFAULT_DETAILED_GC_ENABLED;
+                    "property 'oak.documentstore.fullGCEnabled'")
+    boolean fullGCEnabled() default DEFAULT_FULL_GC_ENABLED;
 
     @AttributeDefinition(
             name = "Document Node Store Embedded Verification for Detailed GC",
