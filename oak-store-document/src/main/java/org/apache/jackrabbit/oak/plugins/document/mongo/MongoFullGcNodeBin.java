@@ -50,7 +50,7 @@ public class MongoFullGcNodeBin implements FullGcNodeBin {
     private boolean enabled;
 
     public MongoFullGcNodeBin(MongoDocumentStore ds) {
-        this(ds, Boolean.getBoolean(FullGcNodeBin.OAK_DOCUMENT_FULL_GC_BIN_ENABLED));
+        this(ds, false);
     }
 
     public MongoFullGcNodeBin(MongoDocumentStore store, boolean fullGcBinEnabled) {

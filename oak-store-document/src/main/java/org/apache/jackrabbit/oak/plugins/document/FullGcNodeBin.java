@@ -31,8 +31,6 @@ import java.util.Map;
  */
 public interface FullGcNodeBin {
 
-    String OAK_DOCUMENT_FULL_GC_BIN_ENABLED = "oak.documentstore.fullGCAuditLoggingEnabled";
-
     static FullGcNodeBin noBin(DocumentStore store) {
         return new FullGcNodeBin() {
             @Override

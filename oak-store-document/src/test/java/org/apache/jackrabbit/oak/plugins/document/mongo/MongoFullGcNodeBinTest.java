@@ -80,7 +80,6 @@ public class MongoFullGcNodeBinTest {
     @After
     public void tearDown() {
         Mockito.reset(documentStore, mockBinCollection);
-        System.clearProperty(FullGcNodeBin.OAK_DOCUMENT_FULL_GC_BIN_ENABLED);
     }
 
     @Test
@@ -92,19 +91,6 @@ public class MongoFullGcNodeBinTest {
     public void enableWithConstructor() {
         assertTrue(new MongoFullGcNodeBin(this.documentStore, true).isEnabled());
     }
-
-    @Test
-    public void enableWithSystemProperty() {
-        System.setProperty(FullGcNodeBin.OAK_DOCUMENT_FULL_GC_BIN_ENABLED, "true");
-        assertTrue(new MongoFullGcNodeBin(this.documentStore).isEnabled());
-    }
-
-    @Test
-    public void enableWithConstructorHasPrecedence() {
-        System.setProperty(FullGcNodeBin.OAK_DOCUMENT_FULL_GC_BIN_ENABLED, "false");
-        assertTrue(new MongoFullGcNodeBin(this.documentStore, true).isEnabled());
-    }
-
 
     @Test
     public void remove() {
