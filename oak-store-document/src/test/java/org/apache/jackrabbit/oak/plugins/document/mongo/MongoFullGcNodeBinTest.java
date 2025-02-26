@@ -21,8 +21,10 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import org.apache.jackrabbit.oak.plugins.document.Collection;
 import org.apache.jackrabbit.oak.plugins.document.Document;
+import org.apache.jackrabbit.oak.plugins.document.FullGcNodeBin;
 import org.apache.jackrabbit.oak.plugins.document.NodeDocument;
 import org.apache.jackrabbit.oak.plugins.document.UpdateOp;
+import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -53,7 +55,7 @@ public class MongoFullGcNodeBinTest {
     @Mock
     MongoDocumentStore documentStore;
 
-    @InjectMocks
+
     MongoFullGcNodeBin fullGcBin;
 
     @Mock MongoCollection<BasicDBObject> mockBinCollection;
@@ -62,6 +64,7 @@ public class MongoFullGcNodeBinTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
+        fullGcBin = new MongoFullGcNodeBin(documentStore, true);
         when(documentStore.remove(eq(Collection.NODES), anyMap())).thenAnswer(invocation -> {
             Map<String, Long> map = invocation.getArgument(1);
             return map.size();
@@ -72,9 +75,36 @@ public class MongoFullGcNodeBinTest {
         });
 
         when(documentStore.getBinCollection()).thenReturn(mockBinCollection);
-
-        fullGcBin.setEnabled(true);
     }
+
+    @After
+    public void tearDown() {
+        Mockito.reset(documentStore, mockBinCollection);
+        System.clearProperty(FullGcNodeBin.OAK_DOCUMENT_FULL_GC_BIN_ENABLED);
+    }
+
+    @Test
+    public void defaultDisabled() {
+        assertFalse(new MongoFullGcNodeBin(this.documentStore).isEnabled());
+    }
+
+    @Test
+    public void enableWithConstructor() {
+        assertTrue(new MongoFullGcNodeBin(this.documentStore, true).isEnabled());
+    }
+
+    @Test
+    public void enableWithSystemProperty() {
+        System.setProperty(FullGcNodeBin.OAK_DOCUMENT_FULL_GC_BIN_ENABLED, "true");
+        assertTrue(new MongoFullGcNodeBin(this.documentStore).isEnabled());
+    }
+
+    @Test
+    public void enableWithConstructorHasPrecedence() {
+        System.setProperty(FullGcNodeBin.OAK_DOCUMENT_FULL_GC_BIN_ENABLED, "false");
+        assertTrue(new MongoFullGcNodeBin(this.documentStore, true).isEnabled());
+    }
+
 
     @Test
     public void remove() {

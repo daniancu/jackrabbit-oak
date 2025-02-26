@@ -17,7 +17,6 @@
 package org.apache.jackrabbit.oak.plugins.document.mongo;
 
 import com.mongodb.BasicDBObject;
-import org.apache.jackrabbit.oak.commons.properties.SystemPropertySupplier;
 import org.apache.jackrabbit.oak.plugins.document.Collection;
 import org.apache.jackrabbit.oak.plugins.document.Document;
 import org.apache.jackrabbit.oak.plugins.document.DocumentStore;
@@ -25,7 +24,6 @@ import org.apache.jackrabbit.oak.plugins.document.FullGcNodeBin;
 import org.apache.jackrabbit.oak.plugins.document.NodeDocument;
 import org.apache.jackrabbit.oak.plugins.document.UpdateOp;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.Instant;
@@ -49,10 +47,15 @@ public class MongoFullGcNodeBin implements FullGcNodeBin {
     private static final Logger LOG = LoggerFactory.getLogger(MongoFullGcNodeBin.class);
     public static final String GC_COLLECTED_AT = "_gcCollectedAt";
     private final MongoDocumentStore mongoDocumentStore;
-    private boolean enabled = SystemPropertySupplier.create("oak.document.fullGcBin.enabled", false).get();
+    private boolean enabled;
 
     public MongoFullGcNodeBin(MongoDocumentStore ds) {
-        mongoDocumentStore = ds;
+        this(ds, Boolean.getBoolean(FullGcNodeBin.OAK_DOCUMENT_FULL_GC_BIN_ENABLED));
+    }
+
+    public MongoFullGcNodeBin(MongoDocumentStore store, boolean fullGcBinEnabled) {
+        mongoDocumentStore = store;
+        enabled = fullGcBinEnabled;
     }
 
     /**
@@ -100,15 +103,9 @@ public class MongoFullGcNodeBin implements FullGcNodeBin {
         return mongoDocumentStore.findAndUpdate(Collection.NODES, updateOpList);
     }
 
-    /**
-     * Saves the name of properties that will be removed  in the BIN collection
-     *
-     * @param orphanOrDeletedRemovalMap the keys of the documents to remove with the corresponding timestamps
-     * @return true if the documents were successfully added to the bin
-     */
-    private boolean addToBin(Map<String, Long> orphanOrDeletedRemovalMap) {
+    protected boolean addToBin(Map<String, Long> orphanOrDeletedRemovalMap) {
         if (!enabled) {
-            LOG.info("Bin is disabled, skip adding delete candidate documents to bin");
+            LOG.info("Bin is disabled, skipping adding delete candidate documents to bin");
             return true;
         }
         LOG.info("Adding {} delete candidate documents to bin", orphanOrDeletedRemovalMap.size());
@@ -124,15 +121,9 @@ public class MongoFullGcNodeBin implements FullGcNodeBin {
         return false;
     }
 
-    /**
-     * Saves the ID of documents that will be removed in the BIN collection
-     *
-     * @param updateOpList the update operation list for removing the documents
-     * @return true if the documents were successfully added to the bin
-     */
     private boolean addToBin(List<UpdateOp> updateOpList) {
         if (!enabled) {
-            LOG.info("Bin is disabled, skip adding removed properties to bin");
+            LOG.info("Bin is disabled, skipping adding removed properties to bin");
             return true;
         }
         LOG.info("Adding {} removed properties to bin", updateOpList.size());
@@ -145,12 +136,12 @@ public class MongoFullGcNodeBin implements FullGcNodeBin {
         return false;
     }
 
-    private boolean persist(List<BasicDBObject> inserts) {
+    protected boolean persist(List<BasicDBObject> inserts) {
         mongoDocumentStore.getBinCollection().insertMany(inserts);
         return true;
     }
 
-    private BasicDBObject toBasicDBObject(UpdateOp op) {
+    BasicDBObject toBasicDBObject(UpdateOp op) {
         BasicDBObject doc = new BasicDBObject();
         doc.put(Document.ID, "/bin/" + op.getId() + "-" + Instant.now().toEpochMilli());
         //copy removed properties to the new document

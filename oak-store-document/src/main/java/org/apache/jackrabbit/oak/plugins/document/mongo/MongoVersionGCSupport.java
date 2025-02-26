@@ -113,8 +113,13 @@ public class MongoVersionGCSupport extends VersionGCSupport {
      */
     private final int batchSize = Integer.getInteger(
             "oak.mongo.queryDeletedDocsBatchSize", 1000);
+    private final boolean fullGcBinEnabled;
 
     public MongoVersionGCSupport(MongoDocumentStore store) {
+        this(store, false);
+    }
+
+    public MongoVersionGCSupport(MongoDocumentStore store, boolean fullGcBinEnabled) {
         super(store);
         this.store = store;
         if(hasIndex(getNodeCollection(), SD_TYPE, SD_MAX_REV_TIME_IN_SECS)) {
@@ -131,7 +136,7 @@ public class MongoVersionGCSupport extends VersionGCSupport {
         } else {
             modifiedIdHint = null;
         }
-        fullGcNodeBin = new MongoFullGcNodeBin(store);
+        this.fullGcBinEnabled = fullGcBinEnabled;
     }
 
     @Override
@@ -485,7 +490,7 @@ public class MongoVersionGCSupport extends VersionGCSupport {
 
     @Override
     public FullGcNodeBin getFullGCBin() {
-        return fullGcNodeBin;
+        return new MongoFullGcNodeBin(store, fullGcBinEnabled);
     }
 
     private static String getID(BasicDBObject document) {
