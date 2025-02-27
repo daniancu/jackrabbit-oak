@@ -56,7 +56,6 @@ public class MongoFullGcNodeBin implements FullGcNodeBin {
     public MongoFullGcNodeBin(MongoDocumentStore store, boolean fullGcBinEnabled) {
         mongoDocumentStore = store;
         enabled = fullGcBinEnabled;
-        LOG.info("Full GC Bin is {}", enabled ? "enabled" : "disabled");
     }
 
     /**
