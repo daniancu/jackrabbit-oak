@@ -29,6 +29,7 @@ import static java.util.Optional.ofNullable;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.lt;
 import static java.util.Collections.emptyList;
+import org.apache.jackrabbit.oak.commons.properties.SystemPropertySupplier;
 import static org.apache.jackrabbit.oak.plugins.document.Collection.NODES;
 import static org.apache.jackrabbit.oak.plugins.document.Document.ID;
 import org.apache.jackrabbit.oak.plugins.document.FullGcNodeBin;
@@ -111,8 +112,8 @@ public class MongoVersionGCSupport extends VersionGCSupport {
     /**
      * The batch size for the query of possibly deleted docs.
      */
-    private final int batchSize = Integer.getInteger(
-            "oak.mongo.queryDeletedDocsBatchSize", 1000);
+    private final int batchSize = SystemPropertySupplier.create(
+        "oak.mongo.queryDeletedDocsBatchSize", 1000).get();
     private final boolean fullGcBinEnabled;
 
     public MongoVersionGCSupport(MongoDocumentStore store) {

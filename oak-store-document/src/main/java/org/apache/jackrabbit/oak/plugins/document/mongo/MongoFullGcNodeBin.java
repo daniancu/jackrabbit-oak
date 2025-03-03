@@ -24,6 +24,7 @@ import org.apache.jackrabbit.oak.plugins.document.FullGcNodeBin;
 import org.apache.jackrabbit.oak.plugins.document.NodeDocument;
 import org.apache.jackrabbit.oak.plugins.document.UpdateOp;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.Instant;
@@ -46,6 +47,8 @@ import java.util.stream.Collectors;
 public class MongoFullGcNodeBin implements FullGcNodeBin {
     private static final Logger LOG = LoggerFactory.getLogger(MongoFullGcNodeBin.class);
     public static final String GC_COLLECTED_AT = "_gcCollectedAt";
+    private static final Logger LOG = LoggerFactory.getLogger(MongoFullGcNodeBin.class);
+
     private final MongoDocumentStore mongoDocumentStore;
     private boolean enabled;
 
