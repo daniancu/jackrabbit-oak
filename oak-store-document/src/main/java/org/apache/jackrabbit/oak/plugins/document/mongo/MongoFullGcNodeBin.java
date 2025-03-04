@@ -105,7 +105,7 @@ public class MongoFullGcNodeBin implements FullGcNodeBin {
         return mongoDocumentStore.findAndUpdate(Collection.NODES, updateOpList);
     }
 
-    protected boolean addToBin(Map<String, Long> orphanOrDeletedRemovalMap) {
+    private boolean addToBin(Map<String, Long> orphanOrDeletedRemovalMap) {
         if (!enabled) {
             LOG.info("Bin is disabled, skipping adding delete candidate documents to bin");
             return true;
@@ -138,12 +138,12 @@ public class MongoFullGcNodeBin implements FullGcNodeBin {
         return false;
     }
 
-    protected boolean persist(List<BasicDBObject> inserts) {
+    private boolean persist(List<BasicDBObject> inserts) {
         mongoDocumentStore.getBinCollection().insertMany(inserts);
         return true;
     }
 
-    BasicDBObject toBasicDBObject(UpdateOp op) {
+    private BasicDBObject toBasicDBObject(UpdateOp op) {
         BasicDBObject doc = new BasicDBObject();
         doc.put(Document.ID, "/bin/" + op.getId() + "-" + Instant.now().toEpochMilli());
         //copy removed properties to the new document
