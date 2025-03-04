@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
  *  Each method delegates directly to DocumentStore
  */
 public class MongoFullGcNodeBin implements FullGcNodeBin {
-    private static final Logger LOG = LoggerFactory.getLogger(MongoFullGcNodeBin.class);
     public static final String GC_COLLECTED_AT = "_gcCollectedAt";
     private static final Logger LOG = LoggerFactory.getLogger(MongoFullGcNodeBin.class);
 
@@ -164,5 +163,9 @@ public class MongoFullGcNodeBin implements FullGcNodeBin {
     public void setEnabled(boolean value) {
         this.enabled = value;
         LOG.info("Full GC Bin changed to {}", enabled ? "enabled" : "disabled");
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }

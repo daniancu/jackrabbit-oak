@@ -101,7 +101,6 @@ public class MongoVersionGCSupport extends VersionGCSupport {
 
     /** the hint representing "_modified_1__id_1" - if that index exists, null otherwise */
     private final BasicDBObject modifiedIdHint;
-    private final MongoFullGcNodeBin fullGcNodeBin;
 
     /** timestamp of last time an explain of the 'getModifiedDocs' query was logged */
     private long lastExplainLogMs = -1;
@@ -114,7 +113,7 @@ public class MongoVersionGCSupport extends VersionGCSupport {
      */
     private final int batchSize = SystemPropertySupplier.create(
         "oak.mongo.queryDeletedDocsBatchSize", 1000).get();
-    private final boolean fullGcBinEnabled;
+    private final MongoFullGcNodeBin fullGcBin;
 
     public MongoVersionGCSupport(MongoDocumentStore store) {
         this(store, false);
@@ -137,7 +136,7 @@ public class MongoVersionGCSupport extends VersionGCSupport {
         } else {
             modifiedIdHint = null;
         }
-        this.fullGcBinEnabled = fullGcBinEnabled;
+        this.fullGcBin = new MongoFullGcNodeBin(store, fullGcBinEnabled);
     }
 
     @Override
@@ -491,7 +490,7 @@ public class MongoVersionGCSupport extends VersionGCSupport {
 
     @Override
     public FullGcNodeBin getFullGCBin() {
-        return new MongoFullGcNodeBin(store, fullGcBinEnabled);
+        return fullGcBin;
     }
 
     private static String getID(BasicDBObject document) {
